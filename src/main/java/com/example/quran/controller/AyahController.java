@@ -33,7 +33,6 @@ public class AyahController {
                     return resultMap;
                 })
                 .collect(Collectors.toList());
-
         return transformedAyahs;
     }
 
