@@ -32,6 +32,7 @@ public class AyahController {
                     resultMap.put("text", ayah.getText());
                     return resultMap;
                 })
+
                 .collect(Collectors.toList());
         return transformedAyahs;
     }
