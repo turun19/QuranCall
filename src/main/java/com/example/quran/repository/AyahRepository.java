@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface AyahRepository extends JpaRepository<Ayah, Long> {
-    List<Ayah> findBySurah(Integer surahNumber);
+    List<Ayah> findBySurahOrderByAyahAsc(Integer surahNumber);
 }

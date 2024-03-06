@@ -14,6 +14,6 @@ public class AyahService {
     AyahRepository ayahRepository;
 
     public List<Ayah> getSurah(Integer surahNumber){
-        return ayahRepository.findBySurah(surahNumber);
+        return ayahRepository.findBySurahOrderByAyahAsc(surahNumber);
     }
 }

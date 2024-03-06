@@ -13,9 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +45,29 @@ public class AuthService {
     @Autowired
     JwtUtils jwtUtils;
 
-    public AuthenticationResponse loginUser(LoginRequest loginRequest) {
+//    public AuthenticationResponse loginUser(LoginRequest loginRequest) {
+//
+//            Authentication authentication = authenticationManager
+//                    .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+//
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+//
+//            ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+//
+//            List<String> roles = userDetails.getAuthorities().stream()
+//                    .map(item -> item.getAuthority())
+//                    .collect(Collectors.toList());
+//
+//            return new AuthenticationResponse(userDetails.getId(),
+//                    userDetails.getName(),
+//                    userDetails.getEmail(),
+//                    roles,
+//                    jwtCookie.getValue());
+//    }
+public AuthenticationResponse loginUser(LoginRequest loginRequest) {
+    try {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
@@ -59,10 +84,12 @@ public class AuthService {
         return new AuthenticationResponse(userDetails.getId(),
                 userDetails.getName(),
                 userDetails.getEmail(),
-                userDetails.getPassword(),
                 roles,
                 jwtCookie.getValue());
+    } catch (AuthenticationException e) {
+        throw new UsernameNotFoundException("Invalid email/password supplied");
     }
+}
 
     public void registerUser(SignupRequest signUpRequest) {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
