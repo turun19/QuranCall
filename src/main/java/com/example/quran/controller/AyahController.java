@@ -19,7 +19,7 @@ public class AyahController {
     AyahService ayahService;
 
     @GetMapping("/ayah/{surahNumber}")
-    public List<Map<String, Object>> getBySurah(@PathVariable Integer surahNumber) {
+    public ResponseEntity<List<Map<String, Object>>> getBySurah(@PathVariable Integer surahNumber) {
         List<Ayah> ayahList = ayahService.getSurah(surahNumber);
 
         // Transform Ayah objects into Maps containing desired fields
@@ -34,7 +34,7 @@ public class AyahController {
                 })
 
                 .collect(Collectors.toList());
-        return transformedAyahs;
+        return ResponseEntity.ok(transformedAyahs);
     }
 
 }

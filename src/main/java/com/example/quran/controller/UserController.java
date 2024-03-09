@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/getEmailUser")
-    public Optional<Users> getUserEmail(String email){
+    public Users getUserEmail(String email){
         return userService.getUserByEmail(email);
     }
 
@@ -48,12 +49,26 @@ public class UserController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) throws Exception{
-        Users users = usersRepository.findByEmail(changePasswordRequest.getEmail()).get();
-        if(!userService.oldPasswordIsValid(users, changePasswordRequest.getOldPassword())){
-            return ResponseEntity.ok("Incorrect old password");
+    public String changePassword(@RequestBody String email, @RequestBody String oldPassword, @RequestBody String newPassword , Model model) {
+        boolean success = userService.changeUserPassword(email, oldPassword, newPassword);
+        if (success) {
+            model.addAttribute("success", "Kata sandi berhasil diubah");
+        } else {
+            model.addAttribute("error", "Kata sandi lama salah atau email tidak ditemukan");
         }
-        userService.changePassword(users, changePasswordRequest.getNewPassword());
-        return ResponseEntity.ok("Berhasil berubah password");
+        return "result";
     }
+//    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) throws Exception{
+//        UserDTO pDTO = new UserDTO();
+//        pDTO.setEmail(changePasswordRequest.getEmail());
+//        pDTO.setPassword(changePasswordRequest.getOldPassword());
+//
+//        int check = userService.changeUserPassword(pDTO, changePasswordRequest.getNewPassword());
+//
+//        if(check == 1){
+//            return ResponseEntity.status(HttpStatus.OK).body("Berhasil");
+//
+//        }
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("gagal");
+//    }
 }

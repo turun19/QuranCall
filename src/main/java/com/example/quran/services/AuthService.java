@@ -2,7 +2,7 @@ package com.example.quran.services;
 
 import com.example.quran.dto.LoginRequest;
 import com.example.quran.dto.SignupRequest;
-import com.example.quran.jwt.AuthenticationResponse;
+import com.example.quran.response.AuthenticationResponse;
 import com.example.quran.jwt.JwtUtils;
 import com.example.quran.model.ERole;
 import com.example.quran.model.Role;
@@ -13,12 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -67,7 +64,6 @@ public class AuthService {
 //                    jwtCookie.getValue());
 //    }
 public AuthenticationResponse loginUser(LoginRequest loginRequest) {
-    try {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
@@ -86,9 +82,7 @@ public AuthenticationResponse loginUser(LoginRequest loginRequest) {
                 userDetails.getEmail(),
                 roles,
                 jwtCookie.getValue());
-    } catch (AuthenticationException e) {
-        throw new UsernameNotFoundException("Invalid email/password supplied");
-    }
+
 }
 
     public void registerUser(SignupRequest signUpRequest) {

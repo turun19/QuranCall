@@ -1,4 +1,4 @@
-package com.example.quran.jwt;
+package com.example.quran.response;
 
 import lombok.Getter;
 import lombok.Setter;
