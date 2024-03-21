@@ -57,7 +57,10 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(@RequestBody @Valid SignupRequest signUpRequest) {
+        if(signUpRequest.getEmail() == null || signUpRequest.getUsername() == null || signUpRequest.getPassword() == null){
+            return ResponseEntity.badRequest().body(new MessageResponse(true, "Harus Diisi!"));
+        }
         authService.registerUser(signUpRequest);
         return ResponseEntity.ok(new MessageResponse(false,"User Registered Successful"));
     }

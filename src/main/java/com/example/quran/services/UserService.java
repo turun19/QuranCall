@@ -1,23 +1,31 @@
 package com.example.quran.services;
 
+import com.example.quran.dto.ChangePasswordRequest;
+import com.example.quran.dto.UserDTO;
 import com.example.quran.model.Users;
 import com.example.quran.repository.UsersRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.util.Optional;
 
 @Service
 @Slf4j
+@Transactional
+@RequiredArgsConstructor
 public class UserService {
     @Autowired
     UsersRepository usersRepository;
@@ -30,6 +38,10 @@ public class UserService {
         log.info("Get Data User By Id Succses!");
         return usersRepository.findById(id);
     }
+
+//    public Users getUserByToken(String token){
+//        return usersRepository.findByToken(token);
+//    }
 
     public Users getUserByEmail(String email){
         return usersRepository.findByEmail1(email);
@@ -61,41 +73,30 @@ public class UserService {
     }
 
 
-    public boolean changeUserPassword(String email, String oldPassword, String newPassword) {
-        Optional<Users> optionalUser = usersRepository.findByEmail(email);
-        if (optionalUser.isPresent()) {
-            Users user = optionalUser.get();
-            if (passwordEncoder.matches(oldPassword, user.getPassword())) {
-                user.setPassword(passwordEncoder.encode(newPassword));
-                usersRepository.save(user);
-                return true;
-            }
-        }
-        return false;
+    public boolean checkIfValidOldPassword(Users user, String oldPassword) {
+        return passwordEncoder.matches(oldPassword, user.getPassword());
     }
 
-//    public boolean isTruePassword(String email, String password){
-//        Users users = usersRepository.findByEmail1(email);
-//
-//        if(users != null){
-//            boolean check = passwordEncoder.matches(password, users.getPassword());
-//            return check;
-//        }else {
-//            return false;
-//        }
-//    }
-//
-//    public int changeUserPassword(UserDTO pDTO, String newPassword){
-//        String email = pDTO.getEmail();
-//        String passwordUser = pDTO.getPassword();
-//
-//        boolean checkPassword = isTruePassword(email, passwordUser);
-//
-//        if(checkPassword){
-//            usersRepository.changeUserPassword(passwordEncoder.encode(newPassword));
-//
-//            return 1;
-//        }
-//        return 0;
-//    }
+    @Transactional
+    public void changeUserPasswordByEmail(ChangePasswordRequest changePasswordRequest) throws Exception {
+        Optional<Users> optionalUser = usersRepository.findByEmail(changePasswordRequest.getEmail());
+        log.info(optionalUser + "hai");
+
+        if (optionalUser.isEmpty()) {
+            throw new Exception("User with email " + changePasswordRequest.getEmail() + " not found");
+        }
+
+        Users user = optionalUser.get();
+
+        if (!checkIfValidOldPassword(user, changePasswordRequest.getOldPassword())) {
+            throw new Exception("Old password is incorrect");
+        }
+
+        String encodedPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
+        user.setPassword(encodedPassword);
+
+        usersRepository.save(user);
+
+    }
+
 }

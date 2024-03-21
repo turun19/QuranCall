@@ -28,4 +28,5 @@ public class Ayah {
     private Integer surah;
     private String text;
     private Integer theme;
+    private String surahname;
 }

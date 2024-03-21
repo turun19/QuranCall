@@ -4,6 +4,7 @@ import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "users",
         uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
-public class Users {
+public class Users{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,5 +37,6 @@ public class Users {
         this.email = email;
         this.password = password;
     }
+
 }
 

@@ -17,17 +17,18 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByEmail(String email);
 
     @Query(value = "SELECT * FROM users WHERE email = :email", nativeQuery = true)
-    Users findByEmail1(@Param("email") String email);
+    Users findByEmail1(String email);
 
     @Transactional
     @Modifying
-    @Query(value = "update users set password = :password", nativeQuery = true)
+    @Query(value = "update Users set password = :password", nativeQuery = true)
     void changeUserPassword(@Param("password") String password);
 
     // Query untuk memperbarui kata sandi pengguna berdasarkan alamat email
-    @Modifying
-    @Transactional
-    @Query("UPDATE Users u SET u.password = :newPassword WHERE u.email = :email")
-    void updatePasswordByEmail(String email, String newPassword);
+//    @Modifying
+//    @Transactional
+//    @Query("UPDATE Users SET password = :newPassword")
+//    void updatePasswordByEmail(String email, String newPassword);
 
+//    Users findByToken(String token);
 }
